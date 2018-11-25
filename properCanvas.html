@@ -27,29 +27,58 @@
             var positionPlayerbarY = playerbar.positionY;
             var heightPlayerbar = playerbar.height;
             var widthPlayerbar = playerbar.width;
+            var bouncyLeft = bounceX-10;
+            var bouncyRight = bounceX+10;
+            var bouncyTop = bounceY-10;
+            var bouncyBottom = bounceY+10;
+            var playerbarLeft = positionPlayerbarX;
+            var playerbarRight = positionPlayerbarX + widthPlayerbar;
+            var playerbarTop = positionPlayerbarY;
+            var playerbarBottom = positionPlayerbarY + heightPlayerbar;
+            var speed = 5;
+            var speedTolerance = speed-1;
 
             if (bounceX >= canvas.width -10 || bounceX <= 10) directionX *= -1;
             if (bounceY >= canvas.height -10 || bounceY <= 10) directionY *= -1;
 
-            if (bounceY +10 == positionPlayerbarY && bounceX > positionPlayerbarX && bounceX < positionPlayerbarX + widthPlayerbar){
-                directionX *= -1;
-                directionY *= -1;
+            if (bouncyBottom == playerbarTop || bouncyBottom > playerbarTop && bouncyBottom <= playerbarTop + speedTolerance){
+                if(bouncyRight >= playerbarLeft && bouncyLeft <= playerbarRight){
+                    directionX *= -1;
+                    directionY *= -1;
+                } 
             }
-            if (bounceY -10 == positionPlayerbarY + heightPlayerbar && bounceX > positionPlayerbarX && bounceX < positionPlayerbarX + widthPlayerbar){
-                directionX *= -1;
-                directionY *= -1;
+            if (bouncyTop == playerbarBottom || bouncyTop < playerbarBottom && bouncyTop >= playerbarBottom + speedTolerance){
+                if(bouncyRight >= playerbarLeft && bouncyLeft <= playerbarRight){
+                    directionX *= -1;
+                    directionY *= -1;
+                }
             }
-            if (bounceX +10 == positionPlayerbarX && bounceY > positionPlayerbarY && bounceY < positionPlayerbarY + heightPlayerbar){
-                directionX *= -1;
-                directionY *= -1;
+            if (bouncyRight == playerbarLeft || bouncyRight > playerbarLeft && bouncyRight <= playerbarLeft + speedTolerance){
+                if(bouncyTop <= playerbarBottom && bouncyBottom >= playerbarTop){
+                    directionX *= -1;
+                    directionY *= -1;
+                }
             }
-            if (bounceX -10 == positionPlayerbarX + widthPlayerbar && bounceY > positionPlayerbarY && bounceY < positionPlayerbarY + heightPlayerbar){
-                directionX *= -1;
-                directionY *= -1;
+            if (bouncyLeft == playerbarRight || bouncyLeft < playerbarRight && bouncyLeft >= playerbarRight + speedTolerance){
+                if(bouncyTop <= playerbarBottom && bouncyBottom >= playerbarTop){
+                    directionX *= -1;
+                    directionY *= -1;
+                }
             }
 
-            bounceX +=5 * directionX;
-            bounceY +=5 * directionY;
+            document.getElementById("bounceXdisplay").innerHTML = "bounceX: "+bounceX;
+            document.getElementById("bounceYdisplay").innerHTML = "bounceY: "+bounceY;
+            document.getElementById("bouncyLeft").innerHTML = "bouncyLeft: "+bouncyLeft;
+            document.getElementById("bouncyRight").innerHTML = "bouncyRight: "+bouncyRight;
+            document.getElementById("bouncyTop").innerHTML = "bouncyTop: "+bouncyTop;
+            document.getElementById("bouncyBottom").innerHTML = "bouncyBottom: "+bouncyBottom;
+            document.getElementById("playerbarLeftdisplay").innerHTML = "PBL: "+playerbarLeft;
+            document.getElementById("playerbarRightdisplay").innerHTML = "PBR "+playerbarRight;
+            document.getElementById("playerbarTopdisplay").innerHTML = "PBT: "+playerbarTop;
+            document.getElementById("playerbarBottomdisplay").innerHTML = "PBB: "+playerbarBottom;
+
+            bounceX +=speed * directionX;
+            bounceY +=speed * directionY;
 
             ctx.beginPath();
             ctx.arc(bounceX, bounceY, 10, 0, 2* Math.PI);
@@ -118,6 +147,37 @@
     <canvas id="canvas" width="800" height="600" style="margin-left: auto; margin-right: auto; margin-top: 5%; display: block">
 
     </canvas>
+
+    <p id="bounceXdisplay">
+        "BounceX: "
+    </p>
+    <p id="bounceYdisplay">
+        "BounceY: "
+    </p>
+    <p id="bouncyLeft">
+        "BouncyLeft: "
+    </p>
+    <p id="bouncyRight">
+        "BouncyRight: "
+    </p>
+    <p id="bouncyTop">
+        "BouncyTop: "
+    </p>
+    <p id="bouncyBottom">
+        "BouncyBottom: "
+    </p>
+    <p id="playerbarLeftdisplay">
+        "PBL: "
+    </p>
+    <p id="playerbarRightdisplay">
+        "PBR: "
+    </p>
+    <p id="playerbarTopdisplay">
+        "PBT: "
+    </p>
+    <p id="playerbarBottomdisplay">
+        "PBB: "
+    </p>
 
 </body>
 
