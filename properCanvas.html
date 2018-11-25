@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>properCanvas</title>
+
+    <script>
+        var canvas, ctx, mouseX , mouseY;
+        var bounceX = 400, bounceY = 50;
+        var directionX = 1, directionY = 1;
+        var playerbar = {
+            positionX: 600,
+            positionY: 500,
+            height: 15,
+            width: 120
+        };
+        var mousePositionX = 0;
+
+        
+
+        function bounceBall() {
+            ctx.clearRect(0,0, canvas.width, canvas.height);
+            draw();
+            updatePlayerbar();
+
+            var positionPlayerbarX = playerbar.positionX;
+            var positionPlayerbarY = playerbar.positionY;
+            var heightPlayerbar = playerbar.height;
+            var widthPlayerbar = playerbar.width;
+
+            if (bounceX >= canvas.width -10 || bounceX <= 10) directionX *= -1;
+            if (bounceY >= canvas.height -10 || bounceY <= 10) directionY *= -1;
+
+            if (bounceY +10 == positionPlayerbarY && bounceX > positionPlayerbarX && bounceX < positionPlayerbarX + widthPlayerbar){
+                directionX *= -1;
+                directionY *= -1;
+            }
+            if (bounceY -10 == positionPlayerbarY + heightPlayerbar && bounceX > positionPlayerbarX && bounceX < positionPlayerbarX + widthPlayerbar){
+                directionX *= -1;
+                directionY *= -1;
+            }
+            if (bounceX +10 == positionPlayerbarX && bounceY > positionPlayerbarY && bounceY < positionPlayerbarY + heightPlayerbar){
+                directionX *= -1;
+                directionY *= -1;
+            }
+            if (bounceX -10 == positionPlayerbarX + widthPlayerbar && bounceY > positionPlayerbarY && bounceY < positionPlayerbarY + heightPlayerbar){
+                directionX *= -1;
+                directionY *= -1;
+            }
+
+            bounceX +=5 * directionX;
+            bounceY +=5 * directionY;
+
+            ctx.beginPath();
+            ctx.arc(bounceX, bounceY, 10, 0, 2* Math.PI);
+            ctx.stroke();
+
+            setTimeout(bounceBall, 40);
+        }
+
+        function draw() {
+            //zeichnet den Hintergrund
+        }
+
+        function initPlayerbar(ev) {
+            mousePositionX = ev.clientX;
+            
+        }
+
+        function updatePlayerbar(){
+            var positionPlayerbarX = playerbar.positionX;
+            var positionPlayerbarY = playerbar.positionY;
+            var heightPlayerbar = playerbar.height;
+            var widthPlayerbar = playerbar.width;
+            
+            ctx.beginPath();
+            ctx.fillRect(mousePositionX-canvas.offsetLeft, positionPlayerbarY, widthPlayerbar, heightPlayerbar);
+            ctx.stroke();
+
+            playerbar.positionX = mousePositionX - canvas.offsetLeft;
+        }
+        
+        
+        /*function drawMouse (ev) {
+            ctx.fillStyle = "#00FF00";
+            ctx.fillRect(ev.clientX-canvas.offsetLeft-50/2, ev.clientY-canvas.offsetTop-50/2, 50, 50);
+        }
+        document.addEventListener("mousedown", drawMouse, false);*/
+
+        /*function DrawOnKey(ev) {
+            var key_press = String.fromCharCode(ev.keyCode);
+            var key_code = event.keyCode;
+
+            if(key_press == "A") {
+                //Zeiche Rechteck
+                ctx.fillStyle = "#0000FF";
+                ctx.fillRect(mouseX-25, mouseY-25, 50, 50);
+            }
+        }
+        document.addEventListener("keydown", DrawOnKey, false); */
+        function init() {
+            canvas = document.getElementById("canvas");
+            ctx = canvas.getContext("2d");
+            canvas.style.border = "blue 1px solid";
+            document.addEventListener("mousemove", initPlayerbar, false);
+            bounceBall();
+        }
+
+        document.addEventListener("DOMContentLoaded", init, false);
+        //window.onload = init
+        console.log("Test");
+        
+    
+    </script>
+</head>
+
+<body>
+    <canvas id="canvas" width="800" height="600" style="margin-left: auto; margin-right: auto; margin-top: 5%; display: block">
+
+    </canvas>
+
+</body>
+
+</html>
