@@ -17,7 +17,6 @@
         var mousePositionX = 900;
         var levelChoice = "demo";
         var levelBlocks;
-        var ajaxResponse;
         
         function jsonLevel(levelChoice){
             var ajax = new XMLHttpRequest();
@@ -61,6 +60,12 @@
             var playerbarBottom = positionPlayerbarY + heightPlayerbar;
             var speed = 8;
             var speedTolerance = speed-1;
+            var levelRows = levelBlocks.positions.length;
+            var levelColumns = levelBlocks.positions[0].length;
+            var blocksLeft = [];
+            var blocksRight = [];
+            var blocksTop = [];
+            var blocksBottom = [];
             if (bounceX >= canvas.width -10 || bounceX <= 10) directionX *= -1;
             if (/*bounceY >= canvas.height -10 ||*/ bounceY <= 10) directionY *= -1;
             if (bouncyBottom == playerbarTop || bouncyBottom > playerbarTop && bouncyBottom <= playerbarTop + speedTolerance){
@@ -98,6 +103,138 @@
             if (bounceY >= canvas.height+30){
                 //window.location="gameover.html";
             }
+
+            if(levelRows > 20 || levelColumns > 20){
+                for(currentRow=0;currentRow<levelRows;currentRow++){
+                    for(currentColumn=0;currentColumn<levelColumns;currentColumn++){
+                        blocksLeft.push((canvas.width/levelColumns*currentColumn)+(((canvas.width/levelColumns)-(canvas.width/levelColumns/10))/5));
+                        blocksRight.push((canvas.width/levelColumns*currentColumn)+(((canvas.width/levelColumns)-(canvas.width/levelColumns/10))/5)+((canvas.width/levelColumns)-(canvas.width/levelColumns/10)));
+                        blocksTop.push((canvas.height/2/levelRows*currentRow)+(((canvas.height/2/levelRows)-(canvas.height/2/levelRows/2))/2));
+                        blocksBottom.push((canvas.height/2/levelRows*currentRow)+(((canvas.height/2/levelRows)-(canvas.height/2/levelRows/2))/2)+((canvas.height/2/levelRows)-(canvas.height/2/levelRows/2)));
+                    }
+                }
+            } else {
+                for(currentRow=0;currentRow<levelRows;currentRow++){
+                    for(currentColumn=0;currentColumn<levelColumns;currentColumn++){
+                        blocksLeft.push((canvas.width/levelColumns*currentColumn)+(((canvas.width/levelColumns)-(canvas.width/levelColumns/10))/5));
+                        blocksRight.push((canvas.width/levelColumns*currentColumn)+(((canvas.width/levelColumns)-(canvas.width/levelColumns/10))/5)+((canvas.width/levelColumns)-(canvas.width/levelColumns/10)));
+                        blocksTop.push((currentRow*20)+20);
+                        blocksBottom.push(((currentRow*20)+20)+10);
+                    }
+                }
+            }
+            for(currentRow=0;currentRow<levelRows;currentRow++){
+                for(currentColumn=0;currentColumn<levelColumns;currentColumn++){
+                    if(bouncyTop == blocksBottom[currentRow]){
+                        if(bouncyLeft <= blocksRight[currentColumn] && bouncyRight >= blocksLeft[currentColumn]){
+                            directionX *= -1;
+                            directionY *= -1;
+                            levelBlocks.positions[currentRow][currentColumn] += -1;
+                        } else {
+                            if(bouncyLeft >= blocksRight[currentColumn]-speedTolerance && bouncyLeft < blocksRight[currentColumn] && bouncyRight <= blocksLeft[currentColumn]+speedTolerance && bouncyRight > blocksLeft[currentColumn]){
+                                directionX *= -1;
+                                directionY *= -1;
+                                levelBlocks.positions[currentRow][currentColumn] += -1;
+                            }
+                        }
+                    } else {
+                        if(bouncyTop >= blocksBottom[currentRow]-speedTolerance && bouncyTop < blocksBottom[currentRow]){
+                            if(bouncyLeft <= blocksRight[currentColumn] && bouncyRight >= blocksLeft[currentColumn]){
+                                directionX *= -1;
+                                directionY *= -1;
+                                levelBlocks.positions[currentRow][currentColumn] += -1;
+                            } else {
+                                if(bouncyLeft >= blocksRight[currentColumn]-speedTolerance && bouncyLeft < blocksRight[currentColumn] && bouncyRight <= blocksLeft[currentColumn]+speedTolerance && bouncyRight > blocksLeft[currentColumn]){
+                                    directionX *= -1;
+                                    directionY *= -1;
+                                    levelBlocks.positions[currentRow][currentColumn] += -1;
+                                }
+                            }
+                        }
+                    }
+                    if(bouncyBottom == blocksTop[currentRow]){
+                        if(bouncyLeft <= blocksRight[currentColumn] && bouncyRight >= blocksLeft[currentColumn]){
+                            directionX *= -1;
+                            directionY *= -1;
+                            levelBlocks.positions[currentRow][currentColumn] += -1;
+                        } else {
+                            if(bouncyLeft >= blocksRight[currentColumn]-speedTolerance && bouncyLeft < blocksRight[currentColumn] && bouncyRight <= blocksLeft[currentColumn]+speedTolerance && bouncyRight > blocksLeft[currentColumn]){
+                                directionX *= -1;
+                                directionY *= -1;
+                                levelBlocks.positions[currentRow][currentColumn] += -1;
+                            }
+                        }
+                    } else {
+                        if(bouncyBottom >= blocksTop[currentRow]+speedTolerance && bouncyBottom < blocksTop[currentRow]){
+                            if(bouncyLeft <= blocksRight[currentColumn] && bouncyRight >= blocksLeft[currentColumn]){
+                                directionX *= -1;
+                                directionY *= -1;
+                                levelBlocks.positions[currentRow][currentColumn] += -1;
+                            } else {
+                                if(bouncyLeft >= blocksRight[currentColumn]-speedTolerance && bouncyLeft < blocksRight[currentColumn] && bouncyRight <= blocksLeft[currentColumn]+speedTolerance && bouncyRight > blocksLeft[currentColumn]){
+                                    directionX *= -1;
+                                    directionY *= -1;
+                                    levelBlocks.positions[currentRow][currentColumn] += -1;
+                                }
+                            }
+                        }
+                    }
+                    if(bouncyLeft == blocksRight[currentColumn]){
+                        if(bouncyTop <= blocksBottom[currentRow] && bouncyBottom >= blocksTop[currentRow]){
+                            directionX *= -1;
+                            directionY *= -1;
+                            levelBlocks.positions[currentRow][currentColumn] += -1;
+                        } else {
+                            if(bouncyTop >= blocksBottom[currentRow]-speedTolerance && bouncyTop < blocksBottom[currentRow] && bouncyBottom <= blocksTop[currentRow]+speedTolerance && bouncyBottom > blocksTop[currentRow]){
+                                directionX *= -1;
+                                directionY *= -1;
+                                levelBlocks.positions[currentRow][currentColumn] += -1;
+                            }
+                        }
+                    } else {
+                        if(bouncyLeft >= blocksRight[currentColumn]-speedTolerance && bouncyLeft < blocksRight[currentColumn]){
+                            if(bouncyTop <= blocksBottom[currentRow] && bouncyBottom >= blocksTop[currentRow]){
+                                directionX *= -1;
+                                directionY *= -1;
+                                levelBlocks.positions[currentRow][currentColumn] += -1;
+                            } else {
+                                if(bouncyTop >= blocksBottom[currentRow]-speedTolerance && bouncyTop < blocksBottom[currentRow] && bouncyBottom <= blocksTop[currentRow]+speedTolerance && bouncyBottom > blocksTop[currentRow]){
+                                    directionX *= -1;
+                                    directionY *= -1;
+                                    levelBlocks.positions[currentRow][currentColumn] += -1;
+                                }
+                            }
+                        }
+                    }
+                    if(bouncyRight == blocksLeft[currentColumn]){
+                        if(bouncyTop <= blocksBottom[currentRow] && bouncyBottom >= blocksTop[currentRow]){
+                            directionX *= -1;
+                            directionY *= -1;
+                            levelBlocks.positions[currentRow][currentColumn] += -1;
+                        } else {
+                            if(bouncyTop >= blocksBottom[currentRow]-speedTolerance && bouncyTop < blocksBottom[currentRow] && bouncyBottom <= blocksTop[currentRow]+speedTolerance && bouncyBottom > blocksTop[currentRow]){
+                                directionX *= -1;
+                                directionY *= -1;
+                                levelBlocks.positions[currentRow][currentColumn] += -1;
+                            }
+                        }
+                    } else {
+                        if(bouncyRight <= blocksLeft[currentColumn]-speedTolerance && bouncyRight > blocksLeft[currentColumn]){
+                            if(bouncyTop <= blocksBottom[currentRow] && bouncyBottom >= blocksTop[currentRow]){
+                                directionX *= -1;
+                                directionY *= -1;
+                                levelBlocks.positions[currentRow][currentColumn] += -1;
+                            } else {
+                                if(bouncyTop >= blocksBottom[currentRow]-speedTolerance && bouncyTop < blocksBottom[currentRow] && bouncyBottom <= blocksTop[currentRow]+speedTolerance && bouncyBottom > blocksTop[currentRow]){
+                                    directionX *= -1;
+                                    directionY *= -1;
+                                    levelBlocks.positions[currentRow][currentColumn] += -1;
+                                }
+                            }
+                        }
+                    }
+                }
+            }                
             document.getElementById("bounceXdisplay").innerHTML = "bounceX: "+bounceX;
             document.getElementById("bounceYdisplay").innerHTML = "bounceY: "+bounceY;
             document.getElementById("bouncyLeft").innerHTML = "bouncyLeft: "+bouncyLeft;
