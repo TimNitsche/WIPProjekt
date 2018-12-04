@@ -22,9 +22,6 @@
         var positionY = (canvas.height/2)+2*radius;
         var directionX = 1;
         var directionY = 1;
-        var rightPressed = false;
-        var leftPressed = false;
-        var spacePressed = false;
         var keyboardSpeed = 25;
         var levelData;
         var level = "demo";
@@ -57,6 +54,12 @@
             var ajaxParse = JSON.parse(ajaxResponse);
             levelData = ajaxParse;
             draw();
+        }
+        function checkLevel(){
+            var nextLevel = level + 1;
+            if(levelData.positions.length = 0){
+                window.location.href = "./level"+nextLevel+".html";
+            }
         }
         function keyDownHandler(event){
             if(event.keyCode == 39){
