@@ -20,14 +20,13 @@
         }
 
         document.addEventListener("DOMContentLoaded", init, false);
-        //window.onload = init
 
         function DrawOnKey(ev) {
             var key_press = String.fromCharCode(ev.keyCode);
-            var key_code = event.keyCode;
+            var key_code = ev.keyCode;
 
             if(key_press == "R") {
-                window.location="properCanvas.html"
+                window.location="level1.html"
             }
         }
         document.addEventListener("keydown", DrawOnKey, false);
