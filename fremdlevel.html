@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>properCanvas</title>
+
+    <script>
+        var canvas, ctx, mouseX , mouseY;
+        var bounceX = 400, bounceY = 50;
+        var directionX = 1, directionY = 1;
+        var playerbar = {
+            positionX: 600,
+            positionY: 500,
+            height: 15,
+            width: 120
+        };
+        var mousePositionX = 900;
+        var levelChoice = "demo";
+        var levelBlocks;
+        var ajaxResponse;
+        var img = new Image;
+        
+        function jsonLevel(levelChoice){
+            var ajax = new XMLHttpRequest();
+            ajax.onreadystatechange = function (){
+                if(ajax.readyState == 4){
+                    console.log("ajax ok");
+
+                    ajaxResponse = "";
+                    ajaxResponse = ajax.responseText;
+                    initLevel(ajaxResponse);
+                }
+            }
+            ajax.open("GET", "fremdlevel.json", true);
+            ajax.overrideMimeType("application/json"); 
+            ajax.send();
+        }
+
+        function initLevel(ajaxResponse){
+            var ajaxParse = JSON.parse(ajaxResponse);
+            levelBlocks = ajaxParse;
+            
+            console.log(levelBlocks);
+            bounceBall();
+        }
+
+        function bounceBall() {
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawBlocks();
+            updatePlayerbar();
+            var positionPlayerbarX = playerbar.positionX;
+            var positionPlayerbarY = playerbar.positionY;
+            var heightPlayerbar = playerbar.height;
+            var widthPlayerbar = playerbar.width;
+            var bouncyLeft = bounceX-10;
+            var bouncyRight = bounceX+10;
+            var bouncyTop = bounceY-10;
+            var bouncyBottom = bounceY+10;
+            var playerbarLeft = positionPlayerbarX;
+            var playerbarRight = positionPlayerbarX + widthPlayerbar;
+            var playerbarTop = positionPlayerbarY;
+            var playerbarBottom = positionPlayerbarY + heightPlayerbar;
+            var speed = 8;
+            var speedTolerance = speed-1;
+            if (bounceX >= canvas.width -10 || bounceX <= 10) directionX *= -1;
+            if (/*bounceY >= canvas.height -10 ||*/ bounceY <= 10) directionY *= -1;
+            if (bouncyBottom == playerbarTop || bouncyBottom > playerbarTop && bouncyBottom <= playerbarTop + speedTolerance){
+                if(bouncyRight >= playerbarLeft && bouncyLeft <= playerbarRight){
+                    directionX *= -1;
+                    directionY *= -1;
+                } 
+            }
+            /*if (bouncyTop == playerbarBottom || bouncyTop < playerbarBottom && bouncyTop >= playerbarBottom + speedTolerance){
+                if(bouncyRight >= playerbarLeft && bouncyLeft <= playerbarRight){
+                    directionX *= -1;
+                    directionY *= -1;
+                }
+            }*/
+            if (bouncyRight == playerbarLeft || bouncyRight > playerbarLeft && bouncyRight <= playerbarLeft + speedTolerance){
+                if(bouncyTop <= playerbarBottom && bouncyBottom >= playerbarTop){
+                    directionX *= -1;
+                    directionY *= -1;
+                }
+            }
+            if (bouncyLeft == playerbarRight || bouncyLeft < playerbarRight && bouncyLeft >= playerbarRight - speedTolerance){
+                if(bouncyTop <= playerbarBottom && bouncyBottom >= playerbarTop){
+                    directionX *= -1;
+                    directionY *= -1;
+                }
+            }
+            if (bounceX == playerbarLeft-10 && bounceY == playerbarTop-10){
+                directionX *= -1;
+                directionY *= -1;
+            }
+            if (bounceX == playerbarRight+10 && bounceY == playerbarTop-10){
+                directionX *= -1;
+                directionY *= -1;
+            }
+            if (bounceY >= canvas.height+30){
+                window.location="gameover.html";
+            }
+            document.getElementById("bounceXdisplay").innerHTML = "bounceX: "+bounceX;
+            document.getElementById("bounceYdisplay").innerHTML = "bounceY: "+bounceY;
+            document.getElementById("bouncyLeft").innerHTML = "bouncyLeft: "+bouncyLeft;
+            document.getElementById("bouncyRight").innerHTML = "bouncyRight: "+bouncyRight;
+            document.getElementById("bouncyTop").innerHTML = "bouncyTop: "+bouncyTop;
+            document.getElementById("bouncyBottom").innerHTML = "bouncyBottom: "+bouncyBottom;
+            document.getElementById("playerbarLeftdisplay").innerHTML = "PBL: "+playerbarLeft;
+            document.getElementById("playerbarRightdisplay").innerHTML = "PBR "+playerbarRight;
+            document.getElementById("playerbarTopdisplay").innerHTML = "PBT: "+playerbarTop;
+            document.getElementById("playerbarBottomdisplay").innerHTML = "PBB: "+playerbarBottom;
+            bounceX +=speed * directionX;
+            bounceY +=speed * directionY;
+            ctx.beginPath();
+            ctx.arc(bounceX, bounceY, 10, 0, 2* Math.PI);
+            ctx.stroke();
+            setTimeout(bounceBall, 40);
+        }
+        function draw() {
+            img.onload = function(){
+                ctx.drawImage(img,0,0,800,600);
+           }
+            img.src = "./colosseum.jpg";
+        }
+        function drawBlocks(){
+            try{
+                var rows = levelBlocks.positions.length;
+                var columns = levelBlocks.positions[0].length;
+                var blockWidth = (700/columns)-5;
+                var blockHeight = 10;
+                if(rows > 20 || columns > 20){
+                    blockHeight = (canvas.height/2/rows)-(canvas.height/2/rows/2);
+                    blockWidth = (canvas.width/columns)-(canvas.width/columns/10);
+                }
+                for(levelRow=0;levelRow<rows;levelRow++){
+                    for(levelColumn=0;levelColumn<columns;levelColumn++){
+                        if(levelBlocks.positions[levelRow][levelColumn]>0){
+                            ctx.beginPath();
+                            if(rows > 20 || columns > 20){
+                                ctx.fillRect((canvas.width/columns*levelColumn)+blockWidth/5,(canvas.height/2/rows*levelRow)+blockHeight/2,blockWidth-blockWidth/5,blockHeight);
+                            } else {
+                                ctx.fillRect((canvas.width/columns*levelColumn)+blockWidth/5,(levelRow*20)+20,blockWidth-blockWidth/5,blockHeight);
+                            }
+                            
+                            ctx.closePath();
+                        }
+                    }
+                }
+            }
+            catch(error){
+                console.log(error.message);
+            }
+        }
+        function initPlayerbar(ev) {
+            mousePositionX = ev.clientX-60;
+        }
+        function updatePlayerbar(){
+            var positionPlayerbarX = playerbar.positionX;
+            var positionPlayerbarY = playerbar.positionY;
+            var heightPlayerbar = playerbar.height;
+            var widthPlayerbar = playerbar.width;
+            
+            ctx.beginPath();
+            ctx.fillRect(mousePositionX-canvas.offsetLeft, positionPlayerbarY, widthPlayerbar, heightPlayerbar);
+            ctx.stroke();
+            playerbar.positionX = mousePositionX - canvas.offsetLeft;
+        }
+        
+        
+        /*function drawMouse (ev) {
+            ctx.fillStyle = "#00FF00";
+            ctx.fillRect(ev.clientX-canvas.offsetLeft-50/2, ev.clientY-canvas.offsetTop-50/2, 50, 50);
+        }
+        document.addEventListener("mousedown", drawMouse, false);*/
+        /*function DrawOnKey(ev) {
+            var key_press = String.fromCharCode(ev.keyCode);
+            var key_code = event.keyCode;
+            if(key_press == "A") {
+                //Zeiche Rechteck
+                ctx.fillStyle = "#0000FF";
+                ctx.fillRect(mouseX-25, mouseY-25, 50, 50);
+            }
+        }
+        document.addEventListener("keydown", DrawOnKey, false); */
+        function init() {
+            canvas = document.getElementById("canvas");
+            ctx = canvas.getContext("2d");
+            canvas.style.border = "blue 1px solid";
+            document.addEventListener("mousemove", initPlayerbar, false);
+            jsonLevel(levelChoice);
+            //bounceBall();
+        }
+        document.addEventListener("DOMContentLoaded", init, false);
+        console.log("Test");
+    </script>
+</head>
+
+<body>
+    <canvas id="canvas" width="800" height="600" style="margin-left: auto; margin-right: auto; margin-top: 5%; display: block">
+
+    </canvas>
+
+    <p id="bounceXdisplay">
+        "BounceX: "
+    </p>
+    <p id="bounceYdisplay">
+        "BounceY: "
+    </p>
+    <p id="bouncyLeft">
+        "BouncyLeft: "
+    </p>
+    <p id="bouncyRight">
+        "BouncyRight: "
+    </p>
+    <p id="bouncyTop">
+        "BouncyTop: "
+    </p>
+    <p id="bouncyBottom">
+        "BouncyBottom: "
+    </p>
+    <p id="playerbarLeftdisplay">
+        "PBL: "
+    </p>
+    <p id="playerbarRightdisplay">
+        "PBR: "
+    </p>
+    <p id="playerbarTopdisplay">
+        "PBT: "
+    </p>
+    <p id="playerbarBottomdisplay">
+        "PBB: "
+    </p>
+
+</body>
+
+</html>
