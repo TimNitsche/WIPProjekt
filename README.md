@@ -1,1 +1,4 @@
-# WIPProjekt
+WIP Projekt
+======================
+Dukes of Git
+----------------------
